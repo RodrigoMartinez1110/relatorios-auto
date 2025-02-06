@@ -92,33 +92,29 @@ if uploaded_file is not None:
     st.subheader("📊 Tabela Agrupada")
     st.dataframe(tabela)
 
-    # Função para enviar os dados para o Google Sheets
     def enviar_para_sheets(df):
-        # ✅ Obter as credenciais diretamente do Streamlit Secrets
+        # Carregar credenciais do Streamlit Secrets
         credenciais_dict = st.secrets["credenciais"]
-        
-        # ✅ Converter as credenciais do formato TOML para o formato esperado pelo Google
         creds = Credentials.from_service_account_info(credenciais_dict)
-    
-        # ✅ Autenticar com o Google Sheets
+        
+        # Autenticar com o Google Sheets
         client = gspread.authorize(creds)
     
-        # ✅ Acessar a planilha do Google Sheets
-        nome_planilha = "controle_disparos"  # Substitua pelo nome da sua planilha
-        sheet = client.open(nome_planilha).sheet1  # Acessar a aba principal da planilha
+        # Acessar a planilha
+        nome_planilha = "controle_disparos"  # Nome da sua planilha no Google Sheets
+        try:
+            sheet = client.open(nome_planilha).sheet1
+        except gspread.SpreadsheetNotFound:
+            st.error("⚠ A planilha especificada não foi encontrada. Verifique o nome da planilha.")
+            return
     
-        # ✅ Obter os dados existentes na planilha
+        # Obter os dados existentes e adicionar os novos
         existing = sheet.get_all_records()
-    
-        # ✅ Determinar a próxima linha vazia
-        start_row = len(existing) + 2  # +2 para pular o cabeçalho e adicionar na próxima linha
-    
-        # ✅ Converter o DataFrame para uma lista de listas
+        start_row = len(existing) + 2
         data_to_insert = df.values.tolist()
     
-        # ✅ Inserir os dados na planilha
+        # Inserir os dados
         sheet.insert_rows(data_to_insert, row=start_row)
-    
         st.success("✅ Dados enviados para o Google Sheets com sucesso!")
 
     # Botão para enviar dados para o Google Sheets
