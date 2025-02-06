@@ -91,12 +91,13 @@ if uploaded_file is not None:
 
     st.subheader("📊 Tabela Agrupada")
     st.dataframe(tabela)
+    SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     def enviar_para_sheets(df):
         # Carregar credenciais do Streamlit Secrets
         credenciais_dict = st.secrets["credenciais"]
     
-        # Criar as credenciais com o escopo correto
+        # Criar as credenciais com os escopos corretos
         creds = Credentials.from_service_account_info(credenciais_dict, scopes=SCOPES)
     
         # Autenticar com o Google Sheets
@@ -105,9 +106,13 @@ if uploaded_file is not None:
         # Acessar a planilha
         sheet = client.open("controle_disparos").sheet1
     
-        # Inserir os dados
+        # Obter os dados existentes
+        existing = sheet.get_all_records()
+    
+        # Inserir os novos dados
+        start_row = len(existing) + 2
         data_to_insert = df.values.tolist()
-        sheet.insert_rows(data_to_insert, row=len(sheet.get_all_records()) + 2)
+        sheet.insert_rows(data_to_insert, row=start_row)
     
         st.success("✅ Dados enviados para o Google Sheets com sucesso!")
         
