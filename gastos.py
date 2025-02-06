@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
+
 
 # Configuração da página no Streamlit
 st.set_page_config(page_title="Processador de Campanhas", layout="wide")
