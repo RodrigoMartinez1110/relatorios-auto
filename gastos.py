@@ -93,24 +93,32 @@ if uploaded_file is not None:
 
     # Função para enviar os dados para o Google Sheets
     def enviar_para_sheets(df):
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("credencial.json", scope)
+        # ✅ Obter as credenciais diretamente do Streamlit Secrets
+        credenciais_dict = st.secrets["credenciais"]
+        
+        # ✅ Converter as credenciais do formato TOML para o formato esperado pelo Google
+        creds = Credentials.from_service_account_info(credenciais_dict)
+    
+        # ✅ Autenticar com o Google Sheets
         client = gspread.authorize(creds)
-
-        # Abrir a planilha
-        sheet = client.open("controle_disparos").sheet1  # Nome da planilha no Google Sheets
-
-
-        # Obter os dados existentes
-        existing = pd.DataFrame(sheet.get_all_records())
-
-        # Descobrir a próxima linha vazia
-        start_row = len(existing) + 2  # Pular cabeçalho e ir para a próxima linha vazia
-
-        # Converter DataFrame para lista de listas e adicionar ao Google Sheets
-        sheet.insert_rows(df.values.tolist(), row=start_row)
-
-        st.success("✅ Dados enviados para o Google Sheets!")
+    
+        # ✅ Acessar a planilha do Google Sheets
+        nome_planilha = "controle_disparos"  # Substitua pelo nome da sua planilha
+        sheet = client.open(nome_planilha).sheet1  # Acessar a aba principal da planilha
+    
+        # ✅ Obter os dados existentes na planilha
+        existing = sheet.get_all_records()
+    
+        # ✅ Determinar a próxima linha vazia
+        start_row = len(existing) + 2  # +2 para pular o cabeçalho e adicionar na próxima linha
+    
+        # ✅ Converter o DataFrame para uma lista de listas
+        data_to_insert = df.values.tolist()
+    
+        # ✅ Inserir os dados na planilha
+        sheet.insert_rows(data_to_insert, row=start_row)
+    
+        st.success("✅ Dados enviados para o Google Sheets com sucesso!")
 
     # Botão para enviar dados para o Google Sheets
     if st.button("📤 Enviar para Google Sheets"):
