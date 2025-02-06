@@ -1,8 +1,7 @@
-import pandas as pd
-import streamlit as st
+import json
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from google.oauth2.service_account import Credentials
+import streamlit as st
 
 
 # Configuração da página no Streamlit
