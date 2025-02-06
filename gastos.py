@@ -95,27 +95,22 @@ if uploaded_file is not None:
     def enviar_para_sheets(df):
         # Carregar credenciais do Streamlit Secrets
         credenciais_dict = st.secrets["credenciais"]
-        
-        # Criar credenciais a partir das informações do secrets
-        creds = Credentials.from_service_account_info(credenciais_dict)
+    
+        # Criar as credenciais com o escopo correto
+        creds = Credentials.from_service_account_info(credenciais_dict, scopes=SCOPES)
     
         # Autenticar com o Google Sheets
         client = gspread.authorize(creds)
     
         # Acessar a planilha
-        nome_planilha = "controle_disparos"
-        sheet = client.open(nome_planilha).sheet1
+        sheet = client.open("controle_disparos").sheet1
     
-        # Obter os dados existentes
-        existing = sheet.get_all_records()
-    
-        # Inserir os novos dados
-        start_row = len(existing) + 2
+        # Inserir os dados
         data_to_insert = df.values.tolist()
-        sheet.insert_rows(data_to_insert, row=start_row)
+        sheet.insert_rows(data_to_insert, row=len(sheet.get_all_records()) + 2)
     
         st.success("✅ Dados enviados para o Google Sheets com sucesso!")
-
+        
     # Botão para enviar dados para o Google Sheets
     if st.button("📤 Enviar para Google Sheets"):
         enviar_para_sheets(tabela)
