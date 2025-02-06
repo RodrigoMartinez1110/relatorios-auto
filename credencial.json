@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "n8n-konsi",
+  "private_key_id": "3fb390eca9f7cd084548aa25aae09086a11495dd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCytuYHqLRH8agH\nC74G5So2FS3mQQD0j4tHv8feblX0A6yswp1PJTw4tEs9qo7Isxbw+9qjU4R4bY8a\nwx0P47jnAJnaJZxwr0UX80DOkzy3DV61HYG8/TBGGg8IHKHqPEY/mido5vtYP76z\nA8IYySMhYftpu7/Cu00BeSt/a2U+l0XQPR+cDAJkuLQB+LRP2X84dOKLFxPGF7rs\nIrNQ91V8l1S9jK58xZIkDFtd124o59AR8+be83JGeuMV7lpG4pB+O9XT/0LTj6vc\nrOPAllY6s6R7EgYq/n6UMuJwXvJK8kpQE7RSqK/UPI/JZjhasB4T+qMiFSHKbtIn\n5JrJHG3PAgMBAAECggEAF8yaioeRZolMdo++QR3Qhr5ATAr5DRh2lFn6TGlGIgZB\nPwp1t33+bJC5+l7Vv+11jycDAUAUgpMYfRhhrOWHEKA4XOAoWqtEmMFornnWGox5\nwcXJqrjO7m729H4Xo+Fd+4dUWzhzXVez1hQYi4Nxnbb2K6j4iv61bQ5NWB0dsP1r\n+plXtltJVsS0jlPReupuKbUlU3fiMkmvFfyEzsunHyUv+dkPwUriBzQRiFaruF3f\nS8GrM7+fLwoIWo8BxoggoXre8gFmejbmh+tymjK1vruoK0cFlQc9fWAUA2BEGQZG\nq4sujXWm1SSJ/J1kTivbpFkSfNk94Xr5imRTHKdlPQKBgQDpjwq9o0a7lQWcOWYe\nL8duyKLOizYBDV8laT0ODvpTDxLpfY3XE1bO+xbwxuqot9t6UDP66kQvwr1ZFllN\nwz0mW23RDYV5Aq6hS9Hw54LT3P78/+BVmH8swe6x/q8X+ZWNezWrCoIgJjJYRz3F\nTTI2Xn6fcwPUCrYpP9rai076BQKBgQDD4tMScgCNT4AS9RLkif47q0EHD34daIO+\nv3c6p2vnWFhBVSwoQbZajrmk8w1yLhRHgxirKZ7SJsd05BKGGLtV/vmYKREo2Z+u\nXTsG3PfhL2v4krLUmxjUwjCr80FfWOAGRVjv2KqMmx/Jgbx6hBfgkze7pThD6n4R\nPwrdj1jMwwKBgQCoJyREhFlYlGIFqA2tjhi32hvdOL0Y5Nerx6j9hisTwbaMBKkq\nP/Iv8vcBQzWPY0/RMA08iY2uFTbd/Qkuw3IzO4BFEscV6Khx2HS+TPAUOPgcjtyk\nw7ZMMxP3crX9POQ/iIWLL3WgT9/PTvtaIcoU+tOPWO9Yqp2b9S1MSyABQQKBgFKY\nqAuVCmqLZSOZNvgqv4qFcYv6mmDoGvUpYqrWwYbxF3Wk5lOrMasJl3nYColkqKRm\nwNYbXJ6cP2ooaS8l6ogeVTw1xMiGyvAI28TPE65eApbztHg1VckQgNlgXuZHYV8D\nirbHk1JqboLXM5Qtcqv9J3j1972beMDo5jn6IaVlAoGBAMAEi3fbYFxLtm1fOjtQ\nKzYpgGypDw7RRmLXy/WfkkeCnAH9RdIgMMAiLwoac+W3zUI30EGBu78VZeLRv8Dc\nFnGJQL1NtgHiHKmkisoghGxgc0GruKf9WxHHmn63NyNnQ7bVD7WHCw64APqVT5b2\n8NpJ6bdJE7EQ19cdpcguuIMZ\n-----END PRIVATE KEY-----\n",
+  "client_email": "alimentacao-gastos-geracao@n8n-konsi.iam.gserviceaccount.com",
+  "client_id": "113009470608827502545",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/alimentacao-gastos-geracao%40n8n-konsi.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
