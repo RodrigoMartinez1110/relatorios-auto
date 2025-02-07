@@ -4,9 +4,13 @@ import json
 import pandas as pd
 from google.oauth2.service_account import Credentials
 
-# 📌 Convertendo a string JSON armazenada no Streamlit Secrets para um dicionário
+# 📌 Carregar credenciais do Streamlit Secrets
 if "GOOGLE_CREDENTIALS" in st.secrets:
-    credentials_info = json.loads(st.secrets["GOOGLE_CREDENTIALS"])  # 🔥 SOLUÇÃO!
+    credentials_info = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+    
+    # 🔥 Corrigir o formato da private_key substituindo '\\n' por '\n'
+    credentials_info["private_key"] = credentials_info["private_key"].replace("\\n", "\n")
+
     creds = Credentials.from_service_account_info(credentials_info, scopes=[
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
@@ -18,8 +22,8 @@ else:
     st.stop()
 
 # 📌 ID e Nome da Planilha
-SHEET_ID = "1RKk3kn8hkhjAQswgyhoMIlwVyHDSZAD72mF4BsRYAHs"
-SHEET_NAME = "controle"  # Substitua pelo nome da aba correta
+SHEET_ID = "1RKk3kn8hkhjAQswgyhoMIlwVyHDSZAD72mF4BsRYAHs"  # ID da sua planilha
+SHEET_NAME = "controle"  # Substitua pelo nome real da aba
 
 # 📌 Conectar ao Google Sheets
 try:
