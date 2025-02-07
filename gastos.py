@@ -14,15 +14,14 @@ def autenticar_google_sheets():
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     try:
-        # Lê as credenciais do Streamlit secrets
-        secrets_dict = st.secrets["credenciais"]
-        secrets_json = json.loads(json.dumps(secrets_dict))  # Corrige TOML -> JSON
+        # Lê as credenciais do Streamlit secrets e converte para dicionário
+        secrets_dict = dict(st.secrets["credenciais"])  # Converte AttrDict para dict
         
-        # Corrige a formatação da private_key (substitui \\n por \n)
-        secrets_json["private_key"] = secrets_json["private_key"].replace("\\n", "\n")
+        # Corrige a formatação da private_key
+        secrets_dict["private_key"] = secrets_dict["private_key"].replace("\\n", "\n")
         
         # Cria as credenciais e autentica
-        creds = Credentials.from_service_account_info(secrets_json, scopes=SCOPES)
+        creds = Credentials.from_service_account_info(secrets_dict, scopes=SCOPES)
         client = gspread.authorize(creds)
 
         return client
@@ -30,6 +29,7 @@ def autenticar_google_sheets():
     except Exception as e:
         st.error(f"Erro na autenticação com Google Sheets: {e}")
         return None
+
 
 # 🟢 Upload do arquivo CSV
 uploaded_file = st.file_uploader("📂 Faça upload do arquivo CSV", type=["csv"])
