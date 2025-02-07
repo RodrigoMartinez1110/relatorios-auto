@@ -14,14 +14,18 @@ def autenticar_google_sheets():
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     try:
-        # Lê as credenciais do Streamlit secrets e converte para dicionário
+        # Lê as credenciais do Streamlit secrets como dicionário
         secrets_dict = dict(st.secrets["credenciais"])  # Converte AttrDict para dict
-        
+
         # Corrige a formatação da private_key
         secrets_dict["private_key"] = secrets_dict["private_key"].replace("\\n", "\n")
         
+        # Serializa o dicionário em JSON e retransforma em objeto válido
+        credentials_json = json.dumps(secrets_dict)
+        credentials_data = json.loads(credentials_json)
+
         # Cria as credenciais e autentica
-        creds = Credentials.from_service_account_info(secrets_dict, scopes=SCOPES)
+        creds = Credentials.from_service_account_info(credentials_data, scopes=SCOPES)
         client = gspread.authorize(creds)
 
         return client
