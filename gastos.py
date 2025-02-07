@@ -1,11 +1,10 @@
-import json
 import gspread
-from google.oauth2.service_account import Credentials
+import json
 import streamlit as st
+from google.oauth2.service_account import Credentials
 import pandas as pd
 
-
-# 🟢 Função para autenticar no Google Sheets
+# 🔹 Função para autenticação no Google Sheets
 def autenticar_google_sheets():
     """
     Autentica no Google Sheets usando as credenciais armazenadas no secrets do Streamlit.
@@ -13,10 +12,10 @@ def autenticar_google_sheets():
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     try:
-        # Lê as credenciais do Streamlit secrets e converte para dicionário
-        secrets_dict = dict(st.secrets["credenciais"])
+        # Lê as credenciais do Streamlit secrets
+        secrets_dict = json.loads(json.dumps(st.secrets["credenciais"]))  # Converte AttrDict para JSON
 
-        # Corrige a formatação da private_key (substitui \\n por \n)
+        # Corrige a formatação da private_key
         secrets_dict["private_key"] = secrets_dict["private_key"].replace("\\n", "\n")
 
         # Cria as credenciais e autentica
@@ -29,7 +28,21 @@ def autenticar_google_sheets():
         return None
 
 
-# 🟢 Função para enviar dados ao Google Sheets
+# 🔹 Função para carregar dados do Google Sheets
+def carregar_dados_google_sheets(client, nome_planilha):
+    """
+    Carrega os dados de uma planilha do Google Sheets.
+    """
+    try:
+        sheet = client.open(nome_planilha).sheet1
+        dados = sheet.get_all_records()
+        return pd.DataFrame(dados)
+    except Exception as e:
+        st.error(f"❌ Erro ao carregar dados do Google Sheets: {e}")
+        return None
+
+
+# 🔹 Função para enviar dados ao Google Sheets
 def enviar_dados_google_sheets(client, nome_planilha, df):
     """
     Envia os dados para uma planilha do Google Sheets.
@@ -40,7 +53,7 @@ def enviar_dados_google_sheets(client, nome_planilha, df):
         # Converte o DataFrame em lista de listas
         dados_para_enviar = df.values.tolist()
 
-        # Envia os dados para o Google Sheets (a partir da linha 2 para não sobrescrever o cabeçalho)
+        # Envia os dados para o Google Sheets
         existing_data = sheet.get_all_values()
         start_row = len(existing_data) + 1
         sheet.insert_rows(dados_para_enviar, row=start_row)
@@ -50,7 +63,7 @@ def enviar_dados_google_sheets(client, nome_planilha, df):
         st.error(f"❌ Erro ao enviar dados para o Google Sheets: {e}")
 
 
-# Configuração principal do Streamlit
+# 🔹 Interface no Streamlit
 st.set_page_config(page_title="Envio para Google Sheets", layout="wide")
 st.title("📊 Envio de Dados para Google Sheets com Streamlit")
 
@@ -72,10 +85,21 @@ df_novo = pd.DataFrame(dados_para_envio)
 # Mostrar o DataFrame no Streamlit
 st.dataframe(df_novo)
 
-# Botão para autenticar e enviar os dados
+# 🔹 Botão para testar autenticação
+if st.button("🔍 Testar Conexão com Google Sheets"):
+    client = autenticar_google_sheets()
+    if client:
+        try:
+            sheet = client.open(nome_planilha).sheet1
+            st.success("✅ Conexão com o Google Sheets bem-sucedida!")
+        except Exception as e:
+            st.error(f"❌ Erro ao acessar a planilha: {e}")
+    else:
+        st.error("❌ Autenticação falhou. Verifique suas credenciais.")
+
+# 🔹 Botão para enviar os dados
 if st.button("📤 Enviar Dados para o Google Sheets"):
     client = autenticar_google_sheets()
-
     if client:
         enviar_dados_google_sheets(client, nome_planilha, df_novo)
     else:
