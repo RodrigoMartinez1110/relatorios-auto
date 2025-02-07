@@ -4,19 +4,19 @@ from google.oauth2.service_account import Credentials
 import streamlit as st
 import pandas as pd
 
-# 🟢 Configuração da página no Streamlit
+# Configuração da página no Streamlit
 st.set_page_config(page_title="Processador de Campanhas", layout="wide")
 st.title("📊 Processador de Dados de Campanhas")
 
-# 🟢 Função para autenticar no Google Sheets
+# Função para autenticar no Google Sheets
 def autenticar_google_sheets():
     """Autentica e retorna o cliente gspread"""
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     try:
-        # Lê as credenciais do Streamlit secrets como dicionário
+        # Lê as credenciais do Streamlit secrets e converte para dicionário
         secrets_dict = dict(st.secrets["credenciais"])  # Converte AttrDict para dict
-
+        
         # Corrige a formatação da private_key
         secrets_dict["private_key"] = secrets_dict["private_key"].replace("\\n", "\n")
         
@@ -25,13 +25,11 @@ def autenticar_google_sheets():
         client = gspread.authorize(creds)
 
         return client
-
     except Exception as e:
         st.error(f"Erro na autenticação com Google Sheets: {e}")
         return None
 
-
-# 🟢 Upload do arquivo CSV
+# Upload do arquivo CSV
 uploaded_file = st.file_uploader("📂 Faça upload do arquivo CSV", type=["csv"])
 
 if uploaded_file is not None:
@@ -47,12 +45,11 @@ if uploaded_file is not None:
         st.error(f"❌ Erro ao carregar o arquivo CSV: {e}")
         st.stop()
 
-    # 🟢 Mapeamento para normalizar convênios
+    # Mapeamento para normalizar convênios
     mapeamento_convenios = {
         "GOV SP": ["governo de sp", "gov sp", "governo sp"],
         "GOV CE": ["gov ce", "ceara", "governo do ceara"],
         "GOV RJ": ["governo de rj", "gov rj", "governo rio"],
-        "GOV AL": ["governo de al", "gov al", "governo alagoas"],
         "PREF SP": ["pref sp", "prefeitura de são paulo"],
         "PREF RJ": ["pref rj", "prefeitura do rio de janeiro"]
     }
@@ -68,7 +65,7 @@ if uploaded_file is not None:
 
     base["CONVENIO"] = base["NOME CAMPANHA"].apply(normalizar_convenio)
 
-    # 🟢 Mapeamento para normalizar produtos
+    # Mapeamento para normalizar produtos
     mapeamento_produto = {
         "NOVO": ["novo", "credito novo", "negativos", "tomador"],
         "BENEFICIO E CARTÃO": ["cartões", "cartoes", "benef & cartao"],
@@ -87,26 +84,26 @@ if uploaded_file is not None:
 
     base["PRODUTO"] = base["NOME CAMPANHA"].apply(normalizar_produto)
 
-    # 🟢 Converter data/hora
+    # Converter data/hora
     base['DATA/HORA DISPARO'] = pd.to_datetime(base['DATA/HORA DISPARO'], errors='coerce', dayfirst=True)
     base['DATA DISPARO'] = base['DATA/HORA DISPARO'].dt.strftime("%d/%m/%Y")
     base['HORA DISPARO'] = base['DATA/HORA DISPARO'].dt.strftime("%H:%M")
 
     base['HORA DISPARO'] = base.groupby(['DATA DISPARO', 'CONVENIO', 'PRODUTO'])['HORA DISPARO'].transform('min')
 
-    # 🟢 Criar tabela agrupada
+    # Criar tabela agrupada
     tabela = base.groupby(['DATA DISPARO', 'HORA DISPARO', 'CONVENIO', 'PRODUTO'])['ID CAMPANHA'].size().reset_index(name='quantidade')
     tabela['canal'] = 'RCS'
     tabela['gasto'] = tabela['quantidade'] * 0.105
 
-    # 🟢 Exibir DataFrames no Streamlit
+    # Exibir DataFrames no Streamlit
     st.subheader("📋 Base de Dados Formatada (Amostra)")
     st.dataframe(base.head(50))  # Exibe apenas as 50 primeiras linhas para evitar lentidão
 
     st.subheader("📊 Tabela Agrupada")
     st.dataframe(tabela)
 
-    # 🟢 Função para enviar ao Google Sheets
+    # Função para enviar ao Google Sheets
     def enviar_para_sheets(df):
         """ Envia os dados para o Google Sheets """
         client = autenticar_google_sheets()
@@ -127,8 +124,20 @@ if uploaded_file is not None:
         except Exception as e:
             st.error(f"❌ Erro ao enviar dados para o Google Sheets: {e}")
 
-    # 🟢 Botão para enviar dados ao Google Sheets
-    if st.button("🔍 Testar Conexão com Google Sheets"):
+    # Botão para enviar dados ao Google Sheets
+    if st.button("📤 Enviar para Google Sheets"):
+        enviar_para_sheets(tabela)
+
+    # Botão para baixar os dados processados
+    st.download_button(
+        label="📥 Baixar Tabela Agrupada",
+        data=tabela.to_csv(index=False, sep=';').encode('utf-8'),
+        file_name="tabela_formatada.csv",
+        mime="text/csv"
+    )
+
+# Teste de conexão com o Google Sheets
+if st.button("🔍 Testar Conexão com Google Sheets"):
     client = autenticar_google_sheets()
     if client:
         try:
@@ -138,10 +147,3 @@ if uploaded_file is not None:
             st.error(f"❌ Erro ao acessar a planilha: {e}")
     else:
         st.error("❌ Autenticação falhou. Verifique suas credenciais.")
-    # 🟢 Botão para baixar os dados processados
-    st.download_button(
-        label="📥 Baixar Tabela Agrupada",
-        data=tabela.to_csv(index=False, sep=';').encode('utf-8'),
-        file_name="tabela_formatada.csv",
-        mime="text/csv"
-    )
