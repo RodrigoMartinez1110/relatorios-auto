@@ -1,13 +1,12 @@
 import streamlit as st
 import gspread
-import pandas as pd
 import json
-import os
+import pandas as pd
 from google.oauth2.service_account import Credentials
 
-# Configuração das credenciais a partir do Streamlit Secrets
+# 📌 Convertendo a string JSON armazenada no Streamlit Secrets para um dicionário
 if "GOOGLE_CREDENTIALS" in st.secrets:
-    credentials_info = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+    credentials_info = json.loads(st.secrets["GOOGLE_CREDENTIALS"])  # 🔥 SOLUÇÃO!
     creds = Credentials.from_service_account_info(credentials_info, scopes=[
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
@@ -18,11 +17,11 @@ else:
     st.error("Erro: Credenciais do Google não encontradas! Configure no Streamlit Cloud.")
     st.stop()
 
-# ID e Nome da Planilha
+# 📌 ID e Nome da Planilha
 SHEET_ID = "1RKk3kn8hkhjAQswgyhoMIlwVyHDSZAD72mF4BsRYAHs"
-SHEET_NAME = "controle"  # Nome da aba da planilha
+SHEET_NAME = "controle"  # Substitua pelo nome da aba correta
 
-# Conectar ao Google Sheets
+# 📌 Conectar ao Google Sheets
 try:
     sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
 except Exception as e:
@@ -31,12 +30,12 @@ except Exception as e:
 
 st.title("📊 Alimentação de Dados no Google Sheets")
 
-# Criar campos de entrada no Streamlit
+# 📌 Criar campos de entrada no Streamlit
 nome = st.text_input("Nome")
 email = st.text_input("Email")
 idade = st.number_input("Idade", min_value=0, max_value=100, step=1)
 
-# Botão para enviar os dados
+# 📌 Botão para enviar os dados
 if st.button("Enviar Dados"):
     if nome and email and idade:
         sheet.append_row([nome, email, idade])
@@ -44,7 +43,7 @@ if st.button("Enviar Dados"):
     else:
         st.warning("⚠️ Preencha todos os campos antes de enviar.")
 
-# Exibir os dados da planilha
+# 📌 Exibir os dados da planilha
 st.subheader("📋 Dados na Planilha:")
 dados = sheet.get_all_records()
 df = pd.DataFrame(dados)
