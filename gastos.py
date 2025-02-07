@@ -10,17 +10,17 @@ st.title("📊 Processador de Dados de Campanhas")
 
 # 🟢 Função para autenticar no Google Sheets
 def autenticar_google_sheets():
-    """ Autentica e retorna o cliente gspread """
+    """Autentica e retorna o cliente gspread"""
     SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 
     try:
         # Lê as credenciais do Streamlit secrets como dicionário
-        secrets_dict = st.secrets["credenciais"]
+        secrets_dict = dict(st.secrets["credenciais"])  # Converte AttrDict para dict
 
         # Corrige a formatação da private_key
         secrets_dict["private_key"] = secrets_dict["private_key"].replace("\\n", "\n")
         
-        # Converte para JSON serializável e cria credenciais
+        # Cria as credenciais e autentica
         creds = Credentials.from_service_account_info(secrets_dict, scopes=SCOPES)
         client = gspread.authorize(creds)
 
@@ -128,9 +128,16 @@ if uploaded_file is not None:
             st.error(f"❌ Erro ao enviar dados para o Google Sheets: {e}")
 
     # 🟢 Botão para enviar dados ao Google Sheets
-    if st.button("📤 Enviar para Google Sheets"):
-        enviar_para_sheets(tabela)
-
+    if st.button("🔍 Testar Conexão com Google Sheets"):
+    client = autenticar_google_sheets()
+    if client:
+        try:
+            sheet = client.open("controle_disparos").sheet1
+            st.success("✅ Conexão com o Google Sheets bem-sucedida!")
+        except Exception as e:
+            st.error(f"❌ Erro ao acessar a planilha: {e}")
+    else:
+        st.error("❌ Autenticação falhou. Verifique suas credenciais.")
     # 🟢 Botão para baixar os dados processados
     st.download_button(
         label="📥 Baixar Tabela Agrupada",
